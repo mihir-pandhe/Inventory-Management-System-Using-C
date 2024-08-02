@@ -24,14 +24,23 @@ void addItem() {
     printf("Item added successfully!\n");
 }
 
+void displayInventory() {
+    printf("ID\tName\tQuantity\tPrice\n");
+    for (int i = 0; i < itemCount; i++) {
+        printf("%d\t%s\t%d\t%.2f\n", inventory[i].id, inventory[i].name, inventory[i].quantity, inventory[i].price);
+    }
+}
+
 int main() {
     int choice;
     while(1) {
-        printf("1. Add Item\n2. Exit\nEnter your choice: ");
+        printf("1. Add Item\n2. Display Inventory\n3. Exit\nEnter your choice: ");
         scanf("%d", &choice);
         if (choice == 1) {
             addItem();
         } else if (choice == 2) {
+            displayInventory();
+        } else if (choice == 3) {
             break;
         } else {
             printf("Invalid choice! Try again.\n");
