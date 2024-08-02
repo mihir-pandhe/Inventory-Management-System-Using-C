@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define MAX_ITEMS 100
+#define FILENAME "inventory.dat"
 
 typedef struct {
     int id;
@@ -8,10 +12,15 @@ typedef struct {
     float price;
 } Item;
 
-Item inventory[100];
+Item inventory[MAX_ITEMS];
 int itemCount = 0;
 
 void addItem() {
+    if (itemCount >= MAX_ITEMS) {
+        printf("Inventory is full!\n");
+        return;
+    }
+
     Item newItem;
     newItem.id = itemCount + 1;
     printf("Enter item name: ");
@@ -20,14 +29,21 @@ void addItem() {
     scanf("%d", &newItem.quantity);
     printf("Enter price: ");
     scanf("%f", &newItem.price);
+
     inventory[itemCount++] = newItem;
     printf("Item added successfully!\n");
 }
 
 void displayInventory() {
-    printf("ID\tName\tQuantity\tPrice\n");
+    if (itemCount == 0) {
+        printf("Inventory is empty!\n");
+        return;
+    }
+
+    printf("ID\tName\t\tQuantity\tPrice\n");
+    printf("-------------------------------------------------\n");
     for (int i = 0; i < itemCount; i++) {
-        printf("%d\t%s\t%d\t%.2f\n", inventory[i].id, inventory[i].name, inventory[i].quantity, inventory[i].price);
+        printf("%d\t%-15s\t%d\t\t%.2f\n", inventory[i].id, inventory[i].name, inventory[i].quantity, inventory[i].price);
     }
 }
 
@@ -35,6 +51,7 @@ void updateItem() {
     int id, found = 0;
     printf("Enter item ID to update: ");
     scanf("%d", &id);
+
     for (int i = 0; i < itemCount; i++) {
         if (inventory[i].id == id) {
             printf("Enter new name: ");
@@ -43,6 +60,7 @@ void updateItem() {
             scanf("%d", &inventory[i].quantity);
             printf("Enter new price: ");
             scanf("%f", &inventory[i].price);
+
             printf("Item updated successfully!\n");
             found = 1;
             break;
@@ -57,6 +75,7 @@ void deleteItem() {
     int id, found = 0;
     printf("Enter item ID to delete: ");
     scanf("%d", &id);
+
     for (int i = 0; i < itemCount; i++) {
         if (inventory[i].id == id) {
             for (int j = i; j < itemCount - 1; j++) {
@@ -73,24 +92,60 @@ void deleteItem() {
     }
 }
 
+void saveToFile() {
+    FILE *file = fopen(FILENAME, "wb");
+    if (file == NULL) {
+        printf("Error opening file!\n");
+        return;
+    }
+    fwrite(&itemCount, sizeof(int), 1, file);
+    fwrite(inventory, sizeof(Item), itemCount, file);
+    fclose(file);
+    printf("Inventory saved to file.\n");
+}
+
+void loadFromFile() {
+    FILE *file = fopen(FILENAME, "rb");
+    if (file == NULL) {
+        printf("Error opening file!\n");
+        return;
+    }
+    fread(&itemCount, sizeof(int), 1, file);
+    fread(inventory, sizeof(Item), itemCount, file);
+    fclose(file);
+    printf("Inventory loaded from file.\n");
+}
+
 int main() {
     int choice;
-    while(1) {
-        printf("1. Add Item\n2. Display Inventory\n3. Update Item\n4. Delete Item\n5. Exit\nEnter your choice: ");
+    loadFromFile();
+
+    while (1) {
+        printf("\nInventory Management System\n");
+        printf("1. Add Item\n2. Display Inventory\n3. Update Item\n4. Delete Item\n5. Save Inventory\n6. Exit\nEnter your choice: ");
         scanf("%d", &choice);
-        if (choice == 1) {
-            addItem();
-        } else if (choice == 2) {
-            displayInventory();
-        } else if (choice == 3) {
-            updateItem();
-        } else if (choice == 4) {
-            deleteItem();
-        } else if (choice == 5) {
-            break;
-        } else {
-            printf("Invalid choice! Try again.\n");
+
+        switch (choice) {
+            case 1:
+                addItem();
+                break;
+            case 2:
+                displayInventory();
+                break;
+            case 3:
+                updateItem();
+                break;
+            case 4:
+                deleteItem();
+                break;
+            case 5:
+                saveToFile();
+                break;
+            case 6:
+                saveToFile();
+                return 0;
+            default:
+                printf("Invalid choice! Try again.\n");
         }
     }
-    return 0;
 }
