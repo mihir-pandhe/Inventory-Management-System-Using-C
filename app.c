@@ -31,16 +31,40 @@ void displayInventory() {
     }
 }
 
+void updateItem() {
+    int id, found = 0;
+    printf("Enter item ID to update: ");
+    scanf("%d", &id);
+    for (int i = 0; i < itemCount; i++) {
+        if (inventory[i].id == id) {
+            printf("Enter new name: ");
+            scanf("%s", inventory[i].name);
+            printf("Enter new quantity: ");
+            scanf("%d", &inventory[i].quantity);
+            printf("Enter new price: ");
+            scanf("%f", &inventory[i].price);
+            printf("Item updated successfully!\n");
+            found = 1;
+            break;
+        }
+    }
+    if (!found) {
+        printf("Item not found!\n");
+    }
+}
+
 int main() {
     int choice;
     while(1) {
-        printf("1. Add Item\n2. Display Inventory\n3. Exit\nEnter your choice: ");
+        printf("1. Add Item\n2. Display Inventory\n3. Update Item\n4. Exit\nEnter your choice: ");
         scanf("%d", &choice);
         if (choice == 1) {
             addItem();
         } else if (choice == 2) {
             displayInventory();
         } else if (choice == 3) {
+            updateItem();
+        } else if (choice == 4) {
             break;
         } else {
             printf("Invalid choice! Try again.\n");
