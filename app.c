@@ -116,13 +116,32 @@ void loadFromFile() {
     printf("Inventory loaded from file.\n");
 }
 
+void searchItem() {
+    char name[30];
+    int found = 0;
+    printf("Enter item name to search: ");
+    scanf("%s", name);
+
+    printf("ID\tName\t\tQuantity\tPrice\n");
+    printf("-------------------------------------------------\n");
+    for (int i = 0; i < itemCount; i++) {
+        if (strcasecmp(inventory[i].name, name) == 0) {
+            printf("%d\t%-15s\t%d\t\t%.2f\n", inventory[i].id, inventory[i].name, inventory[i].quantity, inventory[i].price);
+            found = 1;
+        }
+    }
+    if (!found) {
+        printf("Item not found!\n");
+    }
+}
+
 int main() {
     int choice;
     loadFromFile();
 
     while (1) {
         printf("\nInventory Management System\n");
-        printf("1. Add Item\n2. Display Inventory\n3. Update Item\n4. Delete Item\n5. Save Inventory\n6. Exit\nEnter your choice: ");
+        printf("1. Add Item\n2. Display Inventory\n3. Update Item\n4. Delete Item\n5. Save Inventory\n6. Search Item\n7. Exit\nEnter your choice: ");
         scanf("%d", &choice);
 
         switch (choice) {
@@ -142,6 +161,9 @@ int main() {
                 saveToFile();
                 break;
             case 6:
+                searchItem();
+                break;
+            case 7:
                 saveToFile();
                 return 0;
             default:
