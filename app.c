@@ -17,7 +17,7 @@ int itemCount = 0;
 
 void addItem() {
     if (itemCount >= MAX_ITEMS) {
-        printf("Inventory is full!\n");
+        printf("Error: Inventory is full!\n");
         return;
     }
 
@@ -26,9 +26,15 @@ void addItem() {
     printf("Enter item name: ");
     scanf("%s", newItem.name);
     printf("Enter quantity: ");
-    scanf("%d", &newItem.quantity);
+    if (scanf("%d", &newItem.quantity) != 1 || newItem.quantity < 0) {
+        printf("Error: Invalid quantity!\n");
+        return;
+    }
     printf("Enter price: ");
-    scanf("%f", &newItem.price);
+    if (scanf("%f", &newItem.price) != 1 || newItem.price < 0) {
+        printf("Error: Invalid price!\n");
+        return;
+    }
 
     inventory[itemCount++] = newItem;
     printf("Item added successfully!\n");
@@ -50,16 +56,25 @@ void displayInventory() {
 void updateItem() {
     int id, found = 0;
     printf("Enter item ID to update: ");
-    scanf("%d", &id);
+    if (scanf("%d", &id) != 1) {
+        printf("Error: Invalid ID!\n");
+        return;
+    }
 
     for (int i = 0; i < itemCount; i++) {
         if (inventory[i].id == id) {
             printf("Enter new name: ");
             scanf("%s", inventory[i].name);
             printf("Enter new quantity: ");
-            scanf("%d", &inventory[i].quantity);
+            if (scanf("%d", &inventory[i].quantity) != 1 || inventory[i].quantity < 0) {
+                printf("Error: Invalid quantity!\n");
+                return;
+            }
             printf("Enter new price: ");
-            scanf("%f", &inventory[i].price);
+            if (scanf("%f", &inventory[i].price) != 1 || inventory[i].price < 0) {
+                printf("Error: Invalid price!\n");
+                return;
+            }
 
             printf("Item updated successfully!\n");
             found = 1;
@@ -74,7 +89,10 @@ void updateItem() {
 void deleteItem() {
     int id, found = 0;
     printf("Enter item ID to delete: ");
-    scanf("%d", &id);
+    if (scanf("%d", &id) != 1) {
+        printf("Error: Invalid ID!\n");
+        return;
+    }
 
     for (int i = 0; i < itemCount; i++) {
         if (inventory[i].id == id) {
@@ -95,7 +113,7 @@ void deleteItem() {
 void saveToFile() {
     FILE *file = fopen(FILENAME, "wb");
     if (file == NULL) {
-        printf("Error opening file!\n");
+        printf("Error: Could not open file!\n");
         return;
     }
     fwrite(&itemCount, sizeof(int), 1, file);
@@ -107,7 +125,7 @@ void saveToFile() {
 void loadFromFile() {
     FILE *file = fopen(FILENAME, "rb");
     if (file == NULL) {
-        printf("Error opening file!\n");
+        printf("Error: Could not open file!\n");
         return;
     }
     fread(&itemCount, sizeof(int), 1, file);
@@ -135,6 +153,11 @@ void searchItem() {
     }
 }
 
+void clearInputBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
 int main() {
     int choice;
     loadFromFile();
@@ -142,7 +165,11 @@ int main() {
     while (1) {
         printf("\nInventory Management System\n");
         printf("1. Add Item\n2. Display Inventory\n3. Update Item\n4. Delete Item\n5. Save Inventory\n6. Search Item\n7. Exit\nEnter your choice: ");
-        scanf("%d", &choice);
+        if (scanf("%d", &choice) != 1) {
+            printf("Error: Invalid choice!\n");
+            clearInputBuffer();
+            continue;
+        }
 
         switch (choice) {
             case 1:
